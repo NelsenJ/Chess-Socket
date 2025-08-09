@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Room</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='game.css') }}">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<script>
+const socket = io();
+const roomId = "{{ room_id }}";
+const username = "{{ username }}";
+
+let canvas = document.getElementById("gameCanvas");
+let ctx = canvas.getContext("2d");
+
+let circle = { x: 100, y: 100, radius: 30, color: "red" };
+let dragging = false;
+
+canvas.addEventListener("mousedown", (e) => {
+    let rect = canvas.getBoundingClientRect();
+    let mouseX = e.clientX - rect.left;
+    let mouseY = e.clientY - rect.top;
+    if (Math.hypot(mouseX - circle.x, mouseY - circle.y) < circle.radius) {
+        dragging = true;
+    }
+});
+
+canvas.addEventListener("mouseup", () => dragging = false);
+
+canvas.addEventListener("mousemove", (e) => {
+    if (dragging) {
+        let rect = canvas.getBoundingClientRect();
+        circle.x = e.clientX - rect.left;
+        circle.y = e.clientY - rect.top;
+        socket.emit("move_circle", { room_id: roomId, circle });
+        draw();
+    }
+});
+
+socket.emit("join_room", { room_id: roomId });
+
+socket.on("update_circle", (data) => {
+    circle = data.circle;
+    draw();
+});
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+    ctx.fillStyle = circle.color;
+    ctx.fill();
+}
+draw();
+</script>
+</body>
+</html>
