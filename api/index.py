@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash, jsonify
-from flask_socketio import SocketIO, join_room, leave_room, emit
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
@@ -13,9 +12,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:/
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-socketio = SocketIO(app, async_mode='threading', manage_session=False, cors_allowed_origins="*")
 
-# Import your models and routes here
+# Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -40,10 +38,7 @@ class Room(db.Model):
 with app.app_context():
     db.create_all()
 
-# Import your routes and socket events
-# Note: For Vercel, you might need to adapt WebSocket functionality
-# as Vercel doesn't support persistent WebSocket connections
-
+# Routes
 @app.route("/")
 def landing():
     if "username" in session:
@@ -105,6 +100,36 @@ def dashboard():
     rooms = Room.query.all()
     return render_template("dashboard.html", rooms=rooms, username=session["username"])
 
+@app.route("/create_room", methods=["POST"])
+def create_room():
+    if "username" not in session:
+        return redirect(url_for("landing"))
+    
+    name = request.form.get("name")
+    room_type = request.form.get("type", "public")
+    mode = request.form.get("mode", "pvp")
+    password = request.form.get("password") if room_type == "private" else None
+    
+    if not name:
+        flash("Nama room tidak boleh kosong", "error")
+        return redirect(url_for("dashboard"))
+    
+    room_id = str(uuid.uuid4())
+    room = Room(
+        id=room_id,
+        name=name,
+        type=room_type,
+        password=password,
+        mode=mode,
+        created_by=session["user_id"]
+    )
+    
+    db.session.add(room)
+    db.session.commit()
+    
+    flash("Room berhasil dibuat!", "success")
+    return redirect(url_for("game", room_id=room_id))
+
 @app.route("/game/<room_id>")
 def game(room_id):
     if "username" not in session:
@@ -121,12 +146,6 @@ def game(room_id):
 def logout():
     session.clear()
     return redirect(url_for("landing"))
-
-# For Vercel deployment, we'll need to handle WebSocket differently
-# This is a simplified version - you may need to adapt your game logic
-
-if __name__ == "__main__":
-    app.run(debug=True)
 
 # Export for Vercel
 app.debug = False
