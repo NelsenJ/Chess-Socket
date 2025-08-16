@@ -606,3 +606,6 @@ def on_leave(data):
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
+
+# For Heroku production
+app.debug = False
