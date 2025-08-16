@@ -56,7 +56,7 @@ A real-time multiplayer TicTacToe game built with Flask, Socket.IO, and SQLAlche
    python -m venv .venv
    
    # On Windows:
-   .venv\Scripts\activate
+   source .venv\Scripts\activate
    
    # On macOS/Linux:
    source .venv/bin/activate
