@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>TicTacToe Online</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="page">
+    <div class="nav">
+      <a class="brand" href="/">
+        <div class="logo"></div>
+        <span>TicTacToe Online</span>
+      </a>
+      <div class="right">
+        <span class="chip">Fast • Secure • Realtime</span>
+        {% if session.get('username') %}
+          <a class="btn secondary" href="{{ url_for('dashboard') }}">Dashboard</a>
+          <a class="btn secondary" href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+          <a class="btn secondary" href="{{ url_for('login') }}">Login</a>
+          <a class="btn" href="{{ url_for('register') }}">Get Started</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <section class="hero">
+      <h1>Play TicTacToe with Friends</h1>
+      <p>Create private or public rooms. Real-time moves, PvP or Vs Computer.</p>
+      <div class="cta">
+        {% if session.get('username') %}
+          <a class="btn" href="{{ url_for('dashboard') }}">Go to Dashboard</a>
+        {% else %}
+          <a class="btn" href="{{ url_for('register') }}">Start Free</a>
+          <a class="btn secondary" href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="grid cols-3" style="max-width:1100px;margin:0 auto;">
+      <div class="card">
+        <h3>Protected Rooms</h3>
+        <p class="muted">Create private rooms secured with a password. Share the unique link to invite friends.</p>
+      </div>
+      <div class="card">
+        <h3>Realtime Gameplay</h3>
+        <p class="muted">Powered by WebSockets for instant moves and smooth multiplayer.</p>
+      </div>
+      <div class="card">
+        <h3>Play Vs Computer</h3>
+        <p class="muted">Practice solo with a simple built-in bot to sharpen your strategy.</p>
+      </div>
+    </section>
+
+    <footer class="footer">© {{ 2025 if false else 2024 }} TicTacToe Online • Built with Flask + Socket.IO</footer>
+  </div>
+</body>
+</html>
+

@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash, jsonify
 import os
 
-app = Flask(__name__)
+app = Flask(__name__)  # Use default folders (api/templates and api/static)
+
 app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'secret!')
 
 # Simple in-memory storage (for testing)
