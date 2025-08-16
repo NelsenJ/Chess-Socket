@@ -40,7 +40,7 @@ A real-time multiplayer TicTacToe game built with Flask, Socket.IO, and SQLAlche
 
 1. **Clone the repository**
    ```bash
-   git clone [<repository-url>](https://github.com/NelsenJ/Socket-Game.git)
+   git clone (https://github.com/NelsenJ/Socket-Game.git)
    cd Chess-Socket
    ```
 
